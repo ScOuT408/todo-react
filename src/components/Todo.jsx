@@ -14,7 +14,7 @@ const TodoDiv = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
+  min-height: 65vh;
   padding: 0 2rem;
 
   .todo_box {
