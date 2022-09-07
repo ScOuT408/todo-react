@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { BiTask } from "react-icons/bi";
+import { v4 as uuid } from "uuid";
 import { FiPlusSquare } from "react-icons/fi";
 import TodoItem from "./TodoItem";
 import { useDispatch } from "react-redux";
-import { addTodo } from "../features/todoSlice";
+import { addTodo, updateTask } from "../features/todoSlice";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import { BiEdit } from "react-icons/bi";
 
 const TodoDiv = styled.div`
   display: flex;
@@ -81,27 +85,45 @@ const TodoDiv = styled.div`
       }
     }
   }
+  .no_todos {
+    font-size: 2rem;
+    font-weight: 500;
+    margin-top: 1.5rem;
+  }
 `;
 
 function Todo() {
+  const taskList = useSelector((state) => state.task.tasks);
   const [task, setTask] = useState("");
+  const [isUpdating, setUpdating] = useState("");
   const dispatch = useDispatch();
 
-  function addTask(e) {
+  function taskHandler(e) {
     e.preventDefault();
 
     if (!task) {
       alert("Add Task First !!");
     } else {
-      dispatch(
-        addTodo({
-          task,
-          time: new Date().toLocaleString(),
-        })
-      );
+      if (isUpdating === "") {
+        dispatch(
+          addTodo({
+            id: uuid(),
+            task,
+            time: new Date().toLocaleString(),
+          })
+        );
+        setTask("");
+        toast.success("Task added successfully");
+      } else {
+        dispatch(updateTask({ isUpdating, task }));
+      }
     }
-    setTask("");
   }
+
+  const updateTodo = (id, task) => {
+    setUpdating(id);
+    setTask(task);
+  };
 
   return (
     <TodoDiv>
@@ -122,10 +144,24 @@ function Todo() {
             />
           </form>
           <div className="plus">
-            <FiPlusSquare className="plus_icon" onClick={addTask} />
+            {isUpdating ? (
+              <BiEdit className="plus_icon" onClick={taskHandler} />
+            ) : (
+              <FiPlusSquare className="plus_icon" onClick={taskHandler} />
+            )}
           </div>
         </div>
-        <TodoItem />
+        {taskList.length > 0 ? (
+          taskList.map((item) => (
+            <TodoItem
+              key={item.id}
+              item={item}
+              updateTodo={() => updateTodo(item.id, item.task)}
+            />
+          ))
+        ) : (
+          <h2 className="no_todos"> No Tasks Added Yet </h2>
+        )}
       </div>
     </TodoDiv>
   );

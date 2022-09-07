@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const getLocalStorage = () => {
-  let localStorageItem = window.localStorage.getItem("taksInfo");
+  let localStorageItem = window.localStorage.getItem("taskInfo");
   if (localStorageItem) {
     return JSON.parse(localStorageItem);
   }
@@ -37,8 +37,34 @@ const todoSlice = createSlice({
         );
       }
     },
+    deleteTodo: (state, action) => {
+      const localItem = window.localStorage.getItem("taskInfo");
+      if (localItem) {
+        const todoArr = JSON.parse(localItem);
+        todoArr.forEach((todo, index) => {
+          if (todo.id === action.payload) {
+            todoArr.splice(index, 1);
+          }
+        });
+        window.localStorage.setItem("taskInfo", JSON.stringify(todoArr));
+        state.tasks = todoArr;
+      }
+    },
+    updateTask: (state, action) => {
+      const localItem = window.localStorage.getItem("taskInfo");
+      if (localItem) {
+        const taskArr = JSON.parse(localItem);
+        taskArr.forEach((todo) => {
+          if (todo.id === action.payload.id) {
+            todo.task = action.payload.task;
+          }
+        });
+        window.localStorage.setItem("taskInfo", JSON.stringify(taskArr));
+        state.tasks = [...taskArr];
+      }
+    },
   },
 });
 
-export const { addTodo } = todoSlice.actions;
+export const { addTodo, deleteTodo, updateTask } = todoSlice.actions;
 export default todoSlice.reducer;

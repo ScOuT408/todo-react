@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import { BsTrash } from "react-icons/bs";
 import { BiEdit } from "react-icons/bi";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
+import { deleteTodo } from "../features/todoSlice";
 
 const ItemDiv = styled.div`
   margin-top: 1.6rem;
@@ -12,6 +14,7 @@ const ItemDiv = styled.div`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 1rem;
 
     .task_title {
       background-color: #e1d9ff;
@@ -44,23 +47,24 @@ const ItemDiv = styled.div`
   }
 `;
 
-function TodoItem() {
-  const taskList = useSelector((state) => state.task.tasks);
+function TodoItem({ item, updateTodo }) {
+  const dispatch = useDispatch();
+
+  const deleteTask = () => {
+    dispatch(deleteTodo(item.id));
+    toast.success("Task Deleted Successfully");
+  };
   return (
     <ItemDiv>
-      {taskList ? (
-        <>
-          <div className="item_box">
-            <h3 className="task_title"> Clean Room </h3>
-            <div className="flex_btns">
-              <BiEdit className="flex_icon" />
-              <BsTrash className="flex_icon" />
-            </div>
+      <div>
+        <div className="item_box">
+          <h3 className="task_title"> {item.task} </h3>
+          <div className="flex_btns">
+            <BiEdit className="flex_icon" onClick={updateTodo} />
+            <BsTrash className="flex_icon" onClick={deleteTask} />
           </div>
-        </>
-      ) : (
-        <h2> No Tasks </h2>
-      )}
+        </div>
+      </div>
     </ItemDiv>
   );
 }
