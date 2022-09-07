@@ -54,13 +54,12 @@ const todoSlice = createSlice({
       const localItem = window.localStorage.getItem("taskInfo");
       if (localItem) {
         const taskArr = JSON.parse(localItem);
-        taskArr.forEach((todo) => {
-          if (todo.id === action.payload.id) {
-            todo.task = action.payload.task;
-          }
+        const data = taskArr.map((todo) => {
+          if (todo.id === action.payload.id) return action.payload.task;
+          return todo;
         });
-        window.localStorage.setItem("taskInfo", JSON.stringify(taskArr));
-        state.tasks = [...taskArr];
+        window.localStorage.setItem("taskInfo", JSON.stringify(data));
+        state.tasks = [...data];
       }
     },
   },
