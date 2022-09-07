@@ -115,7 +115,10 @@ function Todo() {
         setTask("");
         toast.success("Task added successfully");
       } else {
-        dispatch(updateTask({ isUpdating, task }));
+        dispatch(updateTask({ id: isUpdating, task: { task } }));
+        setTask("");
+        setUpdating("");
+        toast.success("Task Updated successfully");
       }
     }
   }
